@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const getUsers = async (req, res, next) => {
   try {
@@ -30,7 +30,11 @@ export const deleteUser = async (req, res) => {
   const { password, avatar, ...inputs } = req.body; // Fixed typo (passsword -> password)
 
   if (id != tokenUserId) {
-    return res.status(403).json({ message: "Forbidden: Only the user who made the request can delete" });
+    return res
+      .status(403)
+      .json({
+        message: "Forbidden: Only the user who made the request can delete",
+      });
   }
 
   try {
@@ -49,7 +53,11 @@ export const updateUser = async (req, res) => {
   const { password, avatar, ...inputs } = req.body; // Fixed typo (passsword -> password)
 
   if (id != tokenUserId) {
-    return res.status(403).json({ message: "Forbidden: Only the user who made the request can update" });
+    return res
+      .status(403)
+      .json({
+        message: "Forbidden: Only the user who made the request can update",
+      });
   }
 
   let updatePassword = null;
@@ -115,18 +123,16 @@ export const profilePost = async (req, res) => {
   try {
     const userPosts = await prisma.post.findMany({
       where: { userId: tokenUserId },
-     
     });
     const saved = await prisma.savedPost.findMany({
       where: { userId: tokenUserId },
       include: { post: true },
     });
 
-    const savedPosts = saved.map((item)=>item.post);
+    const savedPosts = saved.map((item) => item.post);
     res.status(200).json({ userPosts, savedPosts });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to get post!" });
   }
-}
-
+};
