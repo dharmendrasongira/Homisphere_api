@@ -1,17 +1,18 @@
+
+// prisma/schema.prisma
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
 model User {
   id         String      @id @default(auto()) @map("_id") @db.ObjectId
   email      String      @unique
@@ -24,8 +25,9 @@ model User {
   chats      Chat[]      @relation(fields: [chatIDs], references: [id])
   chatIDs    String[]    @db.ObjectId
 }
+
 model Post {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   price       Int
   images      String[]
@@ -37,11 +39,11 @@ model Post {
   longitude   String
   type        Type
   property    Property
-  createdAt   DateTime  @default(now())
-  user        User @relation(fields: [userId], references: [id])
-  userId      String    @db.ObjectId
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String       @db.ObjectId
   postDetail  PostDetail?
-  savedPost    SavedPost[]
+  savedPost   SavedPost[]
 }
 
 enum Type {
@@ -55,7 +57,7 @@ enum Property {
   condo
   land
 }
- 
+
 model PostDetail {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   description String
@@ -70,24 +72,23 @@ model PostDetail {
   postId      String    @db.ObjectId @unique
 }
 
-  model SavedPost {
-    id          String    @id @default(auto()) @map("_id") @db.ObjectId
-    user        User      @relation(fields: [userId], references: [id])
-    userId      String    @db.ObjectId
-    post        Post      @relation(fields: [postId], references: [id])
-    postId      String    @db.ObjectId
-    createdAt   DateTime  @default(now())
-    @@unique([userId, postId])
-
-  }
+model SavedPost {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @db.ObjectId
+  post        Post      @relation(fields: [postId], references: [id])
+  postId      String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  @@unique([userId, postId])
+}
 
 model Chat {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  users     User[]    @relation(fields: [userIDs], references: [id])
-  userIDs   String[]  @db.ObjectId
-  createdAt DateTime  @default(now())
-  seenBy    String[]  @db.ObjectId
-  messages  Message[]
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  users       User[]     @relation(fields: [userIDs], references: [id])
+  userIDs     String[]   @db.ObjectId
+  createdAt   DateTime   @default(now())
+  seenBy      String[]   @db.ObjectId
+  messages    Message[]
   lastMessage String?
 }
 
